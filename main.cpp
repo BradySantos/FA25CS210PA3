@@ -116,17 +116,46 @@ void printPath(pair<int,int> exitcell,
 bool dfs(int r, int c, const vector<vector<int>>& maze, vector<vector<bool>>& visited,
          vector<vector<int>>& parent_r, vector<vector<int>>& parent_c, int exit_r, int exit_c) {
 
+    int numRows = maze.size(); // Store number of rows to not go out of bounds horizontally
+    int numCols = maze[0].size(); // Store number of columns to not go out of bounds vertically
     // Format of coords will be (r, c)
     // To get value of maze location, maze[r][c]. 1 cannot pass, 0 can go through
-    // Start at S
+    // Visited[r][c] stores true/false
     // Base: nothing found, return false. If E is found, return true
     // Neighbors using dr and dc
     // dr[4] = {-1, 0, 1, 0}; // Up, right, down, left
     // dc[4] = {0, 1, 0, -1};
-    // First set starting (r, c) as visited
+    // 0: Up, 1: Right, 2: Down, 3: Left
+
+    // go all the way down first?
+    cout << "Starting traversal from: " << "(" << r << ", " << c << ")\n";
     if ((r == exit_r && c == exit_c)) { // If exit is found, return true
         return true;
     }
+    if ((maze[r + dr[2]][c + dc[2]] == 0) && (visited[r + dr[2]][c + dc[2]] == false)) { // If r + 1 is open&&unvisited, move down one row
+        // Parent?
+        r += dr[2]; // Row changes
+        c += dc[2];
+    }
+    else if ((maze[r + dc[1]][c + dc[1]] == 0) && (visited[r + dc[1]][c + dc[1]] == false)) { // Else if c + 1 is open&&unvisited, move right
+
+        c += dc[1]; // Col changes
+        r += dr[1];
+    }
+    else if ((maze[r + dr[3]][c + dc[3]]) && (visited[r + dr[3]][c + dc[3]] == false)) { // Else if c - 1 is open&&unvisited, move left
+
+        c += dr[3];
+        r += dc[3];
+    }
+    else { // If cannot go down, left, or right then go back up
+        r += dr[4];
+        c += dc[4];
+    }
+
+
+
+    // Different cases with different recursive calls depending on where wall is and what has been visited
+    // Assign parent before each recurse
 
 
 }
