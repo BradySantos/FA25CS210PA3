@@ -124,6 +124,9 @@ bool dfs(int r, int c, const vector<vector<int>>& maze, vector<vector<bool>>& vi
     // dr[4] = {-1, 0, 1, 0}; // Up, right, down, left
     // dc[4] = {0, 1, 0, -1};
     // First set starting (r, c) as visited
+    if ((r == exit_r && c == exit_c)) { // If exit is found, return true
+        return true;
+    }
 
 
 }
