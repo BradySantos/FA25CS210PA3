@@ -132,28 +132,36 @@ bool dfs(int r, int c, const vector<vector<int>>& maze, vector<vector<bool>>& vi
     if ((r == exit_r && c == exit_c)) { // If exit is found, return true
         return true;
     }
-    if ((maze[r + dr[2]][c + dc[2]] == 0) && (visited[r + dr[2]][c + dc[2]] == false)) { // If r + 1 is open&&unvisited, move down one row
+    if ((r + dr[2] < numRows) && (maze[r + dr[2]][c + dc[2]] == 0) && (visited[r + dr[2]][c + dc[2]] == false)) {
+        // If r + 1 is in bounds, open, unvisited, move down one row
         // Parent?
-        r += dr[2]; // Row changes
+        r += dr[2]; // Row changes, might not need and could instead put in recursion
         c += dc[2];
+        visited[r][c] = true; // Set visited coord as true
     }
-    else if ((maze[r + dc[1]][c + dc[1]] == 0) && (visited[r + dc[1]][c + dc[1]] == false)) { // Else if c + 1 is open&&unvisited, move right
-
+    else if ((c + dc[1] < numCols) && (maze[r + dr[1]][c + dc[1]] == 0) && (visited[r + dr[1]][c + dc[1]] == false)) {
+        // Else if c + 1 is in bounds, open, unvisited, move right one col
         c += dc[1]; // Col changes
         r += dr[1];
+        visited[r][c] = true;
     }
-    else if ((maze[r + dr[3]][c + dc[3]]) && (visited[r + dr[3]][c + dc[3]] == false)) { // Else if c - 1 is open&&unvisited, move left
+    else if ((c + dc[3] > 0) && (maze[r + dr[3]][c + dc[3]] == 0) && (visited[r + dr[3]][c + dc[3]] == false)) {
+        // Else if c - 1 is in bounds, open, un visited, move left one col
 
         c += dr[3];
         r += dc[3];
+        visited[r][c] = true;
     }
-    else { // If cannot go down, left, or right then go back up
-        r += dr[4];
-        c += dc[4];
+    else  if (r + dr[0] > 0) { // If cannot go down, left, or right then go back up as long as not at ceiling
+        r += dr[0];
+        c += dc[0];
+        visited[r][c] = true;
     }
 
+    // stack
 
 
+    // Once at bottom, if not found, go back up one and check sides
     // Different cases with different recursive calls depending on where wall is and what has been visited
     // Assign parent before each recurse
 
