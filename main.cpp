@@ -113,59 +113,92 @@ void printPath(pair<int,int> exitcell,
 // STUDENTS IMPLEMENT DFS HERE
 // Add arguments, return type, and logic
 // ----------------------------------------------------------
+
+/* Format of coords is (r, c)
+ * To get value of maze location, maze[r][c]. 1 cannot pass, 0 can go through
+ * Visited[r][c] stores true/false
+ * dr[4] = {-1, 0, 1, 0}; Up, right, down, left
+ * dc[4] = {0, 1, 0, -1};
+ * 0: Up, 1: Right, 2: Down, 3: Left
+ * Check down direction as far as possible; if cannot go down anymore, check right, left, up
+ * Parent debug statements are upside down because of stack unwinding
+ */
+
+
 bool dfs(int r, int c, const vector<vector<int>>& maze, vector<vector<bool>>& visited,
          vector<vector<int>>& parent_r, vector<vector<int>>& parent_c, int exit_r, int exit_c) {
 
     int numRows = maze.size(); // Store number of rows to not go out of bounds horizontally
     int numCols = maze[0].size(); // Store number of columns to not go out of bounds vertically
-    // Format of coords will be (r, c)
-    // To get value of maze location, maze[r][c]. 1 cannot pass, 0 can go through
-    // Visited[r][c] stores true/false
-    // Base: nothing found, return false. If E is found, return true
-    // Neighbors using dr and dc
-    // dr[4] = {-1, 0, 1, 0}; // Up, right, down, left
-    // dc[4] = {0, 1, 0, -1};
-    // 0: Up, 1: Right, 2: Down, 3: Left
 
-    // go all the way down first?
-    cout << "Starting traversal from: " << "(" << r << ", " << c << ")\n";
+    visited[r][c] = true; // Set current coord as visited; updates with each recursion automatically
+    cout << "Traversing from: " << "(" << r << ", " << c << ")\n";
     if ((r == exit_r && c == exit_c)) { // If exit is found, return true
+        cout << "Exiting dfs... path found! :)\n";
         return true;
     }
-    if ((r + dr[2] < numRows) && (maze[r + dr[2]][c + dc[2]] == 0) && (visited[r + dr[2]][c + dc[2]] == false)) {
-        // If r + 1 is in bounds, open, unvisited, move down one row
-        // Parent?
-        r += dr[2]; // Row changes, might not need and could instead put in recursion
-        c += dc[2];
-        visited[r][c] = true; // Set visited coord as true
-    }
-    else if ((c + dc[1] < numCols) && (maze[r + dr[1]][c + dc[1]] == 0) && (visited[r + dr[1]][c + dc[1]] == false)) {
-        // Else if c + 1 is in bounds, open, unvisited, move right one col
-        c += dc[1]; // Col changes
-        r += dr[1];
-        visited[r][c] = true;
-    }
-    else if ((c + dc[3] > 0) && (maze[r + dr[3]][c + dc[3]] == 0) && (visited[r + dr[3]][c + dc[3]] == false)) {
-        // Else if c - 1 is in bounds, open, un visited, move left one col
 
-        c += dr[3];
-        r += dc[3];
-        visited[r][c] = true;
-    }
-    else  if (r + dr[0] > 0) { // If cannot go down, left, or right then go back up as long as not at ceiling
-        r += dr[0];
-        c += dc[0];
-        visited[r][c] = true;
+    // Update for moving down
+    int downR = r + dr[2];
+    int downC = c + dc[2];
+
+    // If r + 1 is in bounds, open, unvisited, move down one row
+    if ((downR < numRows) && (maze[downR][downC] == 0) && (visited[downR][downC] == false)) {
+        cout << "Moving down one\n";
+        if (dfs(downR, downC, maze, visited, parent_r, parent_c, exit_r, exit_c)) { // Go as far as possible since dfs
+            cout << "Updating parent after moving down\n";
+            parent_r[downR][downC] = r; // Set parent of the moved coord to the current coord
+            parent_c[downR][downC] = c;
+            return true; // If exit is found
+        }
     }
 
-    // stack
+    // Update for moving right
+    int rightR = r + dr[1];
+    int rightC = c + dc[1];
 
+    // If c + 1 is in bounds, open, unvisited, move right one col
+    if ((rightC < numCols) && (maze[rightR][rightC] == 0) && (visited[rightR][rightC] == false)) {
+        cout << "Moving right one\n";
+        if (dfs(rightR, rightC, maze, visited, parent_r, parent_c, exit_r, exit_c)) {
+            cout << "Updating parent after moving right one\n";
+            parent_r[rightR][rightC] = r;
+            parent_c[rightR][rightC] = c;
+            return true;
+        }
+    }
 
-    // Once at bottom, if not found, go back up one and check sides
-    // Different cases with different recursive calls depending on where wall is and what has been visited
-    // Assign parent before each recurse
+    // Update for moving left
+    int leftR = r + dr[3];
+    int leftC = c + dc[3];
 
+    // If c - 1 is in bounds, open, unvisited, move left one col
+    if ((leftR >= 0) && (maze[leftR][leftC] == 0) && (visited[leftR][leftC] == false)) {
+        cout << "Moving left one\n";
+        if (dfs(leftR, leftC, maze, visited, parent_r, parent_c, exit_r, exit_c)) {
+            cout << "Updating parent after moving left one\n";
+            parent_r[leftR][leftC] = r;
+            parent_c[leftR][leftC] = c;
+            return true;
+        }
+    }
 
+    // Update for moving up
+    int upR = r + dr[0];
+    int upC = c + dc[0];
+
+    // Going up is the last condition since dfs should check deepest coords first
+    if ((upR >= 0) && (maze[upR][upC] == 0) && (visited[upR][upC] == false)) {
+        cout << "Moving up one\n";
+        if (dfs(upR, upC, maze, visited, parent_r, parent_c, exit_r, exit_c)) {
+            cout << "Updating parent after moving up one\n";
+            parent_r[upR][upC] = r;
+            parent_c[upR][upC] = c;
+            return true;
+        }
+    }
+
+    return false; // If no path is found, false is returned
 }
 
 
