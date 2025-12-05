@@ -121,6 +121,7 @@ void printPath(pair<int,int> exitcell,
  * dc[4] = {0, 1, 0, -1};
  * 0: Up, 1: Right, 2: Down, 3: Left
  * Check down direction as far as possible; if cannot go down anymore, check right, left, up
+ * Note: account for unwinding when reading debug prints
  */
 
 
