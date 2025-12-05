@@ -121,18 +121,18 @@ void printPath(pair<int,int> exitcell,
  * dc[4] = {0, 1, 0, -1};
  * 0: Up, 1: Right, 2: Down, 3: Left
  * Check down direction as far as possible; if cannot go down anymore, check right, left, up
- * Parent debug statements are upside down because of stack unwinding
  */
 
 
 bool dfs(int r, int c, const vector<vector<int>>& maze, vector<vector<bool>>& visited,
          vector<vector<int>>& parent_r, vector<vector<int>>& parent_c, int exit_r, int exit_c) {
 
-    int numRows = maze.size(); // Store number of rows to not go out of bounds horizontally
-    int numCols = maze[0].size(); // Store number of columns to not go out of bounds vertically
+    const int numRows = maze.size(); // Store number of rows to not go out of bounds horizontally
+    const int numCols = maze[0].size(); // Store number of columns to not go out of bounds vertically
 
     visited[r][c] = true; // Set current coord as visited; updates with each recursion automatically
     cout << "Traversing from: " << "(" << r << ", " << c << ")\n";
+
     if ((r == exit_r && c == exit_c)) { // If exit is found, return true
         cout << "Exiting dfs... path found! :)\n";
         return true;
