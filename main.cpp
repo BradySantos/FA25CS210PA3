@@ -121,81 +121,39 @@ void printPath(pair<int,int> exitcell,
  * dc[4] = {0, 1, 0, -1};
  * 0: Up, 1: Right, 2: Down, 3: Left
  * Check down direction as far as possible; if cannot go down anymore, check right, left, up
- * Note: account for unwinding when reading debug prints
+ * Note: account for unwinding/backtracking when reading debug prints
  */
 
 
 bool dfs(int r, int c, const vector<vector<int>>& maze, vector<vector<bool>>& visited,
          vector<vector<int>>& parent_r, vector<vector<int>>& parent_c, int exit_r, int exit_c) {
 
-    const int numRows = maze.size(); // Store number of rows to not go out of bounds horizontally
-    const int numCols = maze[0].size(); // Store number of columns to not go out of bounds vertically
+    const int numRows = maze.size(); // Store number of rows to not go out of bounds vertically
+    const int numCols = maze[0].size(); // Store number of columns to not go out of bounds horizontally
 
     visited[r][c] = true; // Set current coord as visited; updates with each recursion automatically
-    cout << "Traversing from: " << "(" << r << ", " << c << ")\n";
+    cout << "Traversing from: " << "(" << r << ", " << c << ")\n"; // Will look like coords are skipped when backtracking
 
     if ((r == exit_r && c == exit_c)) { // If exit is found, return true
         cout << "Exiting dfs... path found! :)\n";
         return true;
     }
 
-    // Update for moving down
-    int downR = r + dr[2];
-    int downC = c + dc[2];
+    for (int i = 0; i < 4; i++) { // Condensed the four if-statements for down, right, left, up into a for loop
+        int updR = r + dr[i]; // Instead of multiple if-statements, condensed into an int i that gets updated
+        int updC = c + dc[i];
 
-    // If r + 1 is in bounds, open, unvisited, move down one row
-    if ((downR < numRows) && (maze[downR][downC] == 0) && (visited[downR][downC] == false)) {
-        cout << "Moving down one\n";
-        if (dfs(downR, downC, maze, visited, parent_r, parent_c, exit_r, exit_c)) { // Go as far as possible since dfs
-            cout << "Updating parent after moving down\n";
-            parent_r[downR][downC] = r; // Set parent of the moved coord to the current coord
-            parent_c[downR][downC] = c;
-            return true; // If exit is found
-        }
-    }
+        // Move if next coord is in bounds, not a wall, and has not been visited
+        if ((updR >= 0) && (updC >= 0) && (updR < numRows) && (updC < numCols) &&
+            (maze[updR][updC] == 0) && (visited[updR][updC] == false)) {
 
-    // Update for moving right
-    int rightR = r + dr[1];
-    int rightC = c + dc[1];
+            cout << "Moving to " << "(" << updR << ", " << updC << ")\n";
+            parent_r[updR][updC] = r; // Update parents for backtracking when printing
+            parent_c[updR][updC] = c;
 
-    // If c + 1 is in bounds, open, unvisited, move right one col
-    if ((rightC < numCols) && (maze[rightR][rightC] == 0) && (visited[rightR][rightC] == false)) {
-        cout << "Moving right one\n";
-        if (dfs(rightR, rightC, maze, visited, parent_r, parent_c, exit_r, exit_c)) {
-            cout << "Updating parent after moving right one\n";
-            parent_r[rightR][rightC] = r;
-            parent_c[rightR][rightC] = c;
-            return true;
-        }
-    }
-
-    // Update for moving left
-    int leftR = r + dr[3];
-    int leftC = c + dc[3];
-
-    // If c - 1 is in bounds, open, unvisited, move left one col
-    if ((leftR >= 0) && (maze[leftR][leftC] == 0) && (visited[leftR][leftC] == false)) {
-        cout << "Moving left one\n";
-        if (dfs(leftR, leftC, maze, visited, parent_r, parent_c, exit_r, exit_c)) {
-            cout << "Updating parent after moving left one\n";
-            parent_r[leftR][leftC] = r;
-            parent_c[leftR][leftC] = c;
-            return true;
-        }
-    }
-
-    // Update for moving up
-    int upR = r + dr[0];
-    int upC = c + dc[0];
-
-    // Going up is the last condition since dfs should check deepest coords first
-    if ((upR >= 0) && (maze[upR][upC] == 0) && (visited[upR][upC] == false)) {
-        cout << "Moving up one\n";
-        if (dfs(upR, upC, maze, visited, parent_r, parent_c, exit_r, exit_c)) {
-            cout << "Updating parent after moving up one\n";
-            parent_r[upR][upC] = r;
-            parent_c[upR][upC] = c;
-            return true;
+            if (dfs(updR, updC, maze, visited, parent_r, parent_c, exit_r, exit_c)) {
+                return true;
+            }
         }
     }
 
